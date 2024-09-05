@@ -11,17 +11,17 @@ C♭ is designed for developers who appreciate the power and control of C but wa
 
 ## Keep in mind
 
-There is already a C-flat programming language but it involves music notes and it is an esoteric programming language.
+There is already a C-flat programming language but it involves music notes and it is an esoteric programming language.<br/>
 You can see his project [here](https://github.com/NicksterSand/Cflat).
 
-I do not claim the name of the language.
-This is just something to help people learn C, C++ or C# without having to deal with memory managment and other complex stuff.
+I do not claim the name of the language.<br/>
+This is just something to help people learn C, C++ or C# without having to deal with memory managment and other complex stuff.<br/>
 
 ## Features
-- **Simplified Syntax**: A blend of C and modern, high-level languages to keep things concise and readable.
-- **Memory Management**: Optional garbage collection with the ability to manually manage memory if needed.
-- **Concurrency Built-in**: Easy-to-use concurrency features like `async`/`await` for managing multi-threaded tasks.
-- **Cross-Platform**: Designed with portability in mind, targeting desktop, server, and embedded systems.
+- **Simplified Syntax**: A blend of C and modern, high-level languages to keep things concise and readable.<br/>
+- **Memory Management**: Optional garbage collection with the ability to manually manage memory if needed.<br/>
+- **Concurrency Built-in**: Easy-to-use concurrency features like `async`/`await` for managing multi-threaded tasks.<br/>
+- **Cross-Platform**: Designed with portability in mind, targeting desktop, server, and embedded systems.<br/>
 
 ## Example Code
 
@@ -40,3 +40,22 @@ fn main() {
 fn add(int a, int b) -> int {
     return a + b;
 }
+```
+
+# Instructions.
+
+Assuming you have LLVM installed, you can use the clang or llc tool to compile the LLVM IR file (output.ll) into an executable. Here’s how:
+
+Compile LLVM IR to Object File:
+llc -filetype=obj output.ll -o output.o
+
+Link Object File to Create Executable:
+clang output.o -o output
+
+Run the Executable:
+./output
+
+# Notes.
+
+I don't even know if I'm gonna keep creating this, this probably doesn't even work.<br/>
+Fell free to do whatever the f[BEEP] you want with it.
