@@ -1,0 +1,60 @@
+module main;
+
+import lexer;
+import parser;
+import interpreter;
+import compiler;
+
+fn main(args: List<string>) {
+    // Check if a source file is provided as an argument
+    if (args.length < 2) {
+        println("Usage: cflat [interpret/compile] <source_file.cf>");
+        return;
+    }
+
+    string mode = args[0];          // interpret or compile
+    string source_file = args[1];
+
+    // Read.
+    string source_code = read_file(source_file);
+
+    // Tokenize.
+    Lexer lexer = new_lexer(source_code);
+    List<Token> tokens;
+    Token token;
+
+    println("Tokenizing source code...");
+    while (true) {
+        token = next_token(lexer);
+        if (token.type == TokenType.EndOfFile) break;
+        tokens.add(token);
+    }
+
+    // Parse.
+    Parser parser = new_parser(tokens);
+    println("Parsing tokens...");
+    ASTNode ast = parse(parser);
+
+    // IDFK
+    if (mode == "interpret") {
+        println("Interpreting source code...");
+        Interpreter interpreter = new_interpreter();
+        run_program(interpreter, ast);
+    } else if (mode == "compile") {
+        println("Compiling source code...");
+        string ir_code = generate_code(ast);
+        write_file("output.ll", ir_code);
+        println("Compilation successful! LLVM IR code written to output.ll");
+    } else {
+        println("Invalid mode. Use 'interpret' or 'compile'.");
+    }
+}
+
+// Helper function to read a file, bro is illiterate
+fn read_file(string filename) -> string {
+    return "file content";
+}
+
+// Helper function to write a file, bro has Dysgraphia
+fn write_file(string filename, string content) {
+}
