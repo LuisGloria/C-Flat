@@ -1,0 +1,55 @@
+module interpreter;
+import ast;
+import lexer;
+
+// Store shit!
+struct Environment {
+    Map<string, int> variables;
+    Map<string, FunctionDefinition> functions;
+}
+
+// Do I even need to explain this?
+struct Interpreter {
+    Environment env;
+}
+
+fn new_interpreter() -> Interpreter {
+    return Interpreter { env: Environment { variables: new_map(), functions: new_map() } };
+}
+
+fn eval(ref Interpreter interp, ASTNode node) -> int {
+    switch (node) {
+        case FunctionDefinition def:
+            interp.env.functions[def.name] = def;
+            return 0;  // Functions are not executed immediately
+
+        case VariableDeclaration decl:
+            int value = eval(interp, decl.expression);
+            interp.env.variables[decl.name] = value;
+            return value;
+
+        case BinaryExpression expr:
+            int left_value = eval(interp, expr.left);
+            int right_value = eval(interp, expr.right);
+            switch (expr.operator) {
+                case "+": return left_value + right_value;
+                case "-": return left_value - right_value;
+                case "*": return left_value * right_value;
+                case "/": return left_value / right_value;
+            }
+
+        case NumberLiteral num:
+            return num.value;
+
+        case Variable var:
+            return interp.env.variables[var.name];
+
+        default:
+            println("Unknown AST Node"); //dumbass!
+            return 0;
+    }
+}
+
+fn run_program(ref Interpreter interp, ASTNode ast) {
+    eval(interp, ast); //smartass!
+}

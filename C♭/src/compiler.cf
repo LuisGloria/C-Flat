@@ -1,0 +1,57 @@
+module compiler;
+import ast;
+import lexer;
+
+// Placeholder functions for code generation or whatever you wanna call it.
+fn generate_code(ASTNode node) -> string {
+    switch (node) {
+        case FunctionDefinition def:
+            return generate_function(def);
+
+        case VariableDeclaration decl:
+            return generate_variable_declaration(decl);
+
+        case BinaryExpression expr:
+            return generate_binary_expression(expr);
+
+        case NumberLiteral num:
+            return generate_number_literal(num);
+
+        case Variable var:
+            return generate_variable(var);
+
+        default:
+            println("Unknown AST Node");
+            return "";
+    }
+}
+
+fn generate_function(FunctionDefinition def) -> string {
+    string code = "define void " + def.name + "() {\n";
+    code += generate_block(def.body) + "\n}\n";
+    return code;
+}
+
+fn generate_variable_declaration(VariableDeclaration decl) -> string {
+    return "%var_" + decl.name + " = alloca i32, align 4\nstore i32 " + to_string(eval(decl.expression)) + ", i32* %var_" + decl.name;
+}
+
+fn generate_binary_expression(BinaryExpression expr) -> string {
+    return generate_code(expr.left) + " " + expr.operator + " " + generate_code(expr.right);
+}
+
+fn generate_number_literal(NumberLiteral num) -> string {
+    return to_string(num.value);
+}
+
+fn generate_variable(Variable var) -> string {
+    return "%var_" + var.name;
+}
+
+fn generate_block(Block block) -> string {
+    string code = "";
+    for (ASTNode stmt : block.statements) {
+        code += generate_code(stmt) + "\n";
+    }
+    return code;
+}

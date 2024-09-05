@@ -1,0 +1,103 @@
+module lexer;
+
+fn is_digit(char ch) -> bool {
+    return ch >= '0' && ch <= '9';
+}
+
+fn is_letter(char ch) -> bool {
+    return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_';
+}
+
+// Define basic token types
+enum TokenType {
+    Identifier,
+    Number,
+    String,
+    Keyword,
+    Operator,
+    Delimiter,
+    EndOfFile
+}
+
+struct Token {
+    TokenType type;
+    string value;
+}
+
+struct Lexer {
+    string input;
+    int position;
+    int length;
+}
+
+fn new_lexer(string input) -> Lexer {
+    return Lexer { input: input, position: 0, length: input.length() };
+}
+
+// Extract the next token from the input
+fn next_token(ref Lexer lexer) -> Token {
+    skip_whitespace(lexer);
+    
+    if lexer.position >= lexer.length {
+        return Token { type: TokenType.EndOfFile, value: "" };
+    }
+
+    char current = lexer.input[lexer.position];
+
+    // Handle numbers
+    if is_digit(current) {
+        return read_number(lexer);
+    }
+
+    // Handle identifiers and keywords
+    if is_letter(current) {
+        return read_identifier_or_keyword(lexer);
+    }
+
+    // Handle operators and delimiters
+    switch (current) {
+        case '+': lexer.position++; return Token { type: TokenType.Operator, value: "+" };
+        case '-': lexer.position++; return Token { type: TokenType.Operator, value: "-" };
+        case '*': lexer.position++; return Token { type: TokenType.Operator, value: "*" };
+        case '/': lexer.position++; return Token { type: TokenType.Operator, value: "/" };
+        case '(': lexer.position++; return Token { type: TokenType.Delimiter, value: "(" };
+        case ')': lexer.position++; return Token { type: TokenType.Delimiter, value: ")" };
+        case '{': lexer.position++; return Token { type: TokenType.Delimiter, value: "{" };
+        case '}': lexer.position++; return Token { type: TokenType.Delimiter, value: "}" };
+        case ';': lexer.position++; return Token { type: TokenType.Delimiter, value: ";" };
+        default:
+            println("Unknown token: " + current);
+            lexer.position++;
+            return next_token(lexer);
+    }
+}
+
+// Helper functions for reading tokens and stuff
+fn skip_whitespace(ref Lexer lexer) {
+    while lexer.position < lexer.length && lexer.input[lexer.position] == ' ' {
+        lexer.position++;
+    }
+}
+
+fn read_number(ref Lexer lexer) -> Token {
+    int start = lexer.position;
+    while lexer.position < lexer.length && is_digit(lexer.input[lexer.position]) {
+        lexer.position++;
+    }
+    return Token { type: TokenType.Number, value: lexer.input[start:lexer.position] };
+}
+
+fn read_identifier_or_keyword(ref Lexer lexer) -> Token {
+    int start = lexer.position;
+    while lexer.position < lexer.length && (is_letter(lexer.input[lexer.position]) || is_digit(lexer.input[lexer.position])) {
+        lexer.position++;
+    }
+    string value = lexer.input[start:lexer.position];
+    
+    // Check if it's a keyword
+    if value == "fn" || value == "var" || value == "if" || value == "else" || value == "return" {
+        return Token { type: TokenType.Keyword, value: value };
+    }
+    
+    return Token { type: TokenType.Identifier, value: value };
+}

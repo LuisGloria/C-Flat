@@ -1,0 +1,39 @@
+module ast;
+
+struct ASTNode {}
+
+struct BinaryExpression : ASTNode {
+    ASTNode left;
+    string operator;
+    ASTNode right;
+}
+
+struct NumberLiteral : ASTNode {
+    int value;
+}
+
+struct Variable : ASTNode {
+    string name;
+}
+
+// Statements
+struct VariableDeclaration : ASTNode {
+    string name;
+    ASTNode expression;
+}
+
+struct FunctionCall : ASTNode {
+    string name;
+    List<ASTNode> arguments;
+}
+
+struct Block : ASTNode {
+    List<ASTNode> statements;
+}
+
+
+struct FunctionDefinition : ASTNode {
+    string name;
+    List<string> parameters;
+    Block body;
+}

@@ -1,0 +1,25 @@
+module main;
+import lexer;
+import parser;
+import ast;
+
+fn main() {
+    string source_code = "fn add(a, b) { var x = a + b; return x; }";
+    
+    // Step 1: Tokenize the source code
+    Lexer lexer = new_lexer(source_code);
+    List<Token> tokens;
+    Token token;
+    
+    while (true) {
+        token = next_token(lexer);
+        if (token.type == TokenType.EndOfFile) break;
+        tokens.add(token);
+    }
+    
+    // Step 2: Parse the tokens into an AST
+    Parser parser = new_parser(tokens);
+    ASTNode ast = parse(parser);
+
+    println("AST generated successfully!");
+}

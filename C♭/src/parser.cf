@@ -1,0 +1,115 @@
+module parser;
+import lexer;
+import ast;
+
+struct Parser {
+    List<Token> tokens;
+    int current;
+}
+
+fn new_parser(List<Token> tokens) -> Parser {
+    return Parser { tokens: tokens, current: 0 };
+}
+
+fn current_token(ref Parser parser) -> Token {
+    return parser.tokens[parser.current];
+}
+
+fn next_token(ref Parser parser) -> Token {
+    parser.current++;
+    return parser.tokens[parser.current - 1];
+}
+
+fn parse(ref Parser parser) -> ASTNode {
+    return parse_function(parser);  // Start with function definitions
+}
+
+fn parse_function(ref Parser parser) -> ASTNode {
+    Token fn_token = next_token(parser);  // Consume 'fn'
+    Token name = next_token(parser);  // Function name
+
+    next_token(parser);  // Consume '('
+    List<string> parameters = parse_parameters(parser);  // Parse parameters
+    next_token(parser);  // Consume ')'
+
+    Block body = parse_block(parser);  // Parse function body
+
+    return FunctionDefinition { name: name.value, parameters: parameters, body: body };
+}
+
+fn parse_parameters(ref Parser parser) -> List<string> {
+    List<string> params;
+    while (current_token(parser).value != ")") {
+        params.add(next_token(parser).value);
+        if (current_token(parser).value == ",") {
+            next_token(parser);  // Skip comma
+        }
+    }
+    return params;
+}
+
+fn parse_block(ref Parser parser) -> Block {
+    next_token(parser);  // Consume '{'
+    List<ASTNode> statements;
+    
+    while (current_token(parser).value != "}") {
+        statements.add(parse_statement(parser));
+    }
+    
+    next_token(parser);  // Consume '}'
+    return Block { statements: statements };
+}
+
+fn parse_statement(ref Parser parser) -> ASTNode {
+    Token token = current_token(parser);
+    
+    if (token.value == "var") {
+        return parse_variable_declaration(parser);
+    }
+    
+    if (token.value == "return") {
+        return parse_return_statement(parser);
+    }
+
+    return parse_expression(parser);  // Default: treat as expression
+}
+
+fn parse_variable_declaration(ref Parser parser) -> ASTNode {
+    next_token(parser);  // Consume 'var'
+    Token name = next_token(parser);  // Variable name
+
+    next_token(parser);  // Consume '='
+    ASTNode expression = parse_expression(parser);  // Parse the expression
+    
+    next_token(parser);  // Consume ';'
+    return VariableDeclaration { name: name.value, expression: expression };
+}
+
+fn parse_expression(ref Parser parser) -> ASTNode {
+    // Handle binary expressions for simplicity
+    ASTNode left = parse_primary(parser);
+    
+    while (current_token(parser).value == "+" || current_token(parser).value == "-") {
+        string operator = next_token(parser).value;
+        ASTNode right = parse_primary(parser);
+        left = BinaryExpression { left: left, operator: operator, right: right };
+    }
+
+    return left;
+}
+
+fn parse_primary(ref Parser parser) -> ASTNode {
+    Token token = next_token(parser);
+
+    // Handle number literals I think?
+    if (token.type == TokenType.Number) {
+        return NumberLiteral { value: token.value.to_int() };
+    }
+
+    // Handle variable references
+    if (token.type == TokenType.Identifier) {
+        return Variable { name: token.value };
+    }
+    
+    return ASTNode();  // Placeholder, ok?
+}
