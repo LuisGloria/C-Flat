@@ -42,20 +42,21 @@ fn add(int a, int b) -> int {
 }
 ```
 
-# Instructions.
+# Instructions
 
 Assuming you have LLVM installed, you can use the clang or llc tool to compile the LLVM IR file (output.ll) into an executable. Here’s how:
 
-Compile LLVM IR to Object File:
-llc -filetype=obj output.ll -o output.o
+Compile LLVM IR to Object File:<br/>
+```llc -filetype=obj output.ll -o output.o```<br/>
 
-Link Object File to Create Executable:
-clang output.o -o output
+Link Object File to Create Executable:<br/>
+```clang output.o -o output```<br/>
 
-Run the Executable:
-./output
+Run the Executable:<br/>
+```./output```<br/>
 
-# Notes.
+
+# Notes
 
 I don't even know if I'm gonna keep creating this, this probably doesn't even work.<br/>
 Fell free to do whatever the f[BEEP] you want with it.
